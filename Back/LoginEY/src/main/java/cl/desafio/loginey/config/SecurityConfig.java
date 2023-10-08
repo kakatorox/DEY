@@ -25,19 +25,17 @@ public class SecurityConfig {
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
     http
-        .csrf(
-//            csrf ->
-//            csrf.ignoringAntMatchers("/h2-console/**")
-//                .ignoringAntMatchers("/api-docs.html")
-//                .ignoringAntMatchers("/swagger-ui/**")
-//            .disable()
-        )
+        .cors()
+        .and()
+        .csrf()
         .disable()
         .authorizeHttpRequests()
-        .antMatchers("/login/**").permitAll()
-        .antMatchers("/h2-console/**").permitAll()
-        .antMatchers("/swagger-ui/**").permitAll()
-        .antMatchers("/api-docs.html").permitAll()
+        .antMatchers(
+            "/login/**",
+            "/h2-console/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/api-docs.html").permitAll()
         .anyRequest()
         .authenticated()
         .and()
