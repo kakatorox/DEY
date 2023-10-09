@@ -5,6 +5,7 @@ import cl.desafio.loginey.request.CredencialesRequest;
 import cl.desafio.loginey.request.UsuarioRequest;
 import cl.desafio.loginey.response.ResponseServiceObject;
 import cl.desafio.loginey.util.ToolsUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,8 @@ public class LoginController {
   @Autowired
   private UsuarioDelegate usuarioDelegate;
 
-  @GetMapping("/hola")
-  public String hola(){
+  @GetMapping("/UUID")
+  public String UUID(){
     return ToolsUtil.getUUID();
   }
 
