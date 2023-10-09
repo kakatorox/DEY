@@ -53,6 +53,9 @@ public class Usuario implements UserDetails{
   @Column(name = "is_active")
   private Boolean isActive;
 
+  @Column(name = "token")
+  private String token;
+
   @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Telefono> telefonos;
 

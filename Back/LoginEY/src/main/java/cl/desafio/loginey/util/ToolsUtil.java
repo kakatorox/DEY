@@ -10,8 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 @Component
 public class ToolsUtil {
-  public static boolean validarString(String input) {
-    String patron = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d.*\\d).+$";
+  public static boolean validarPassword(String input) {
+    String patron = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d{2}).*$";
 
     Pattern pattern = Pattern.compile(patron);
     Matcher matcher = pattern.matcher(input);
@@ -19,10 +19,14 @@ public class ToolsUtil {
     return matcher.matches();
   }
 
-//  public codificarPassword(String password){
-//    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//
-//  }
+  public static boolean validarFormatoCorreo(String input) {
+    String patron = "^[a-z]{7}@[a-z]+\\.[a-z]+$";
+
+    Pattern pattern = Pattern.compile(patron);
+    Matcher matcher = pattern.matcher(input);
+
+    return matcher.matches();
+  }
 
 
   public static String getUUID(){

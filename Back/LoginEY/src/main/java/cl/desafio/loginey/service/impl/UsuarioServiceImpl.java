@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,30 +62,47 @@ public class UsuarioServiceImpl implements UsuarioService{
 
   @Override
   public ResponseServiceObject getAuth(CredencialesRequest credencialesRequest) {
+    try {
 
-    logger.info(String.valueOf(credencialesRequest));
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            credencialesRequest.getEmail(),
-            credencialesRequest.getPassword()
-        )
-    );
+      if(!isValid(credencialesRequest)){
+        responseServiceObject.setData(null);
+        responseServiceMessage.setTimestamp(new Date());
+        responseServiceMessage.setCode("400");
+        responseServiceMessage.setType(ResponseServiceMessageType.ERROR);
+        responseServiceMessage.setMensaje("No se permiten valores nulos o vacios ");
+        responseServiceObject.setMensaje(responseServiceMessage);
+        return responseServiceObject;
+      }
 
-    var user = usuarioRepository.findByEmail(credencialesRequest.getEmail());
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(
+              credencialesRequest.getEmail(),
+              credencialesRequest.getPassword()
+          )
+      );
 
-    var token = jwtService.getToken(user.get());
+      var user = usuarioRepository.findByEmail(credencialesRequest.getEmail());
 
-    responseServiceMessage.setTimestamp(new Date());
-    responseServiceMessage.setCode("200");
-    responseServiceMessage.setType(ResponseServiceMessageType.OK);
-    responseServiceMessage.setMensaje("Servicio Finalizado Correctamente");
+      responseServiceMessage.setTimestamp(new Date());
+      responseServiceMessage.setCode("200");
+      responseServiceMessage.setType(ResponseServiceMessageType.OK);
+      responseServiceMessage.setMensaje("Servicio Finalizado Correctamente");
+      responseServiceObject.setData(TokenVO.builder()
+          .token(user.get().getToken())
+          .build()
+      );
 
-    responseServiceObject.setData(TokenVO.builder()
-        .token(token)
-        .build()
-    );
+    } catch (AuthenticationException e) {
+      responseServiceObject.setData(null);
+      responseServiceMessage.setTimestamp(new Date());
+      responseServiceMessage.setCode("500");
+      responseServiceMessage.setType(ResponseServiceMessageType.ERROR);
+      responseServiceMessage.setMensaje("Error de autenticacion: " + e.getMessage());
+      responseServiceObject.setMensaje(responseServiceMessage);
+      return responseServiceObject;
+    }
+
     responseServiceObject.setMensaje(responseServiceMessage);
-
     return responseServiceObject;
   }
 
@@ -100,60 +119,88 @@ public class UsuarioServiceImpl implements UsuarioService{
     usuario.setUuid(uuid);
     try {
 
+      if(!isValid(usuarioRequest)){
+        responseServiceObject.setData(null);
+        responseServiceMessage.setTimestamp(new Date());
+        responseServiceMessage.setCode("400");
+        responseServiceMessage.setType(ResponseServiceMessageType.ERROR);
+        responseServiceMessage.setMensaje("No se permiten valores nulos o vacios ");
+        responseServiceObject.setMensaje(responseServiceMessage);
+        return responseServiceObject;
+      }
 
       Optional<Usuario> emailExiste = usuarioRepository.findByEmail(usuarioRequest.getEmail());
       logger.info("emailExiste"+emailExiste.isPresent());
 
       if(!emailExiste.isPresent()){
-        usuario.setUuid(uuid);
-        usuario.setName(usuarioRequest.getName());
-        usuario.setEmail(usuarioRequest.getEmail());
-        usuario.setPassword(passwordEncoder.encode(usuarioRequest.getPassword()));
-        usuario.setCreated(new Date());
-        usuario.setModified(new Date());
-        usuario.setLastLogin(new Date());
-        usuario.setIsActive(true);
-        usuario.setRole(Role.USER);
 
-        for (TelefonoVO tVO:telefonosVO) {
-          Telefono telNuevo = new Telefono();
-          telNuevo.setNumber(tVO.getNumber());
-          telNuevo.setCitycode(tVO.getCitycode());
-          telNuevo.setContrycode(tVO.getContrycode());
-          telNuevo.setUsuario(usuario);
-          telefonos.add(telNuevo);
+        if(!ToolsUtil.validarFormatoCorreo(usuarioRequest.getEmail())){
+          responseServiceObject.setData(null);
+          responseServiceMessage.setTimestamp(new Date());
+          responseServiceMessage.setCode("400");
+          responseServiceMessage.setType(ResponseServiceMessageType.ERROR);
+          responseServiceMessage.setMensaje("Fallo El formato de Correo ");
+          responseServiceObject.setMensaje(responseServiceMessage);
+          return responseServiceObject;
         }
-        usuario.setTelefonos(telefonos);
+        if(!ToolsUtil.validarPassword(usuarioRequest.getPassword())){
+          responseServiceObject.setData(null);
+          responseServiceMessage.setTimestamp(new Date());
+          responseServiceMessage.setCode("400");
+          responseServiceMessage.setType(ResponseServiceMessageType.ERROR);
+          responseServiceMessage.setMensaje("Fallo El formato de password ");
+          responseServiceObject.setMensaje(responseServiceMessage);
+          return responseServiceObject;
+        }
+
+          usuario.setUuid(uuid);
+          usuario.setName(usuarioRequest.getName());
+          usuario.setEmail(usuarioRequest.getEmail());
+          usuario.setPassword(passwordEncoder.encode(usuarioRequest.getPassword()));
+          usuario.setCreated(new Date());
+          usuario.setModified(new Date());
+          usuario.setLastLogin(new Date());
+          usuario.setIsActive(true);
+          usuario.setRole(Role.USER);
+
+          for (TelefonoVO tVO : telefonosVO) {
+            Telefono telNuevo = new Telefono();
+            telNuevo.setNumber(tVO.getNumber());
+            telNuevo.setCitycode(tVO.getCitycode());
+            telNuevo.setContrycode(tVO.getContrycode());
+            telNuevo.setUsuario(usuario);
+            telefonos.add(telNuevo);
+          }
+          usuario.setTelefonos(telefonos);
+          usuario.setToken(jwtService.getToken(usuario));
+
+          usuarioRepository.save(usuario);
+
+          usuarioRequest.getName();
+
+          UsuarioVO usuarioVO = new UsuarioVO();
+
+          usuarioVO.setToken(usuario.getToken());
+          usuarioVO.setUuid(usuario.getUuid());
+          usuarioVO.setCreated(usuario.getCreated());
+          usuarioVO.setModified(usuario.getModified());
+          usuarioVO.setLastLogin(usuario.getLastLogin());
+          usuarioVO.setIsActive(usuario.getIsActive());
 
 
-        usuarioRepository.save(usuario);
-
-        usuarioRequest.getName();
-
-        UsuarioVO usuarioVO= new UsuarioVO();
-
-        usuarioVO.setToken(jwtService.getToken(usuario));
-        usuarioVO.setUuid(usuario.getUuid());
-        usuarioVO.setCreated(usuario.getCreated());
-        usuarioVO.setModified(usuario.getModified());
-        usuarioVO.setLastLogin(usuario.getLastLogin());
-        usuarioVO.setIsActive(usuario.getIsActive());
-
-
-        responseServiceObject.setData(usuarioVO);
-        responseServiceMessage.setTimestamp(new Date());
-        responseServiceMessage.setCode("200");
-        responseServiceMessage.setType(ResponseServiceMessageType.OK);
-        responseServiceMessage.setMensaje("Servicio Finalizado Correctamente");
-
+          responseServiceObject.setData(usuarioVO);
+          responseServiceMessage.setTimestamp(new Date());
+          responseServiceMessage.setCode("200");
+          responseServiceMessage.setType(ResponseServiceMessageType.OK);
+          responseServiceMessage.setMensaje("Servicio Finalizado Correctamente");
 
       }else{
+
         responseServiceObject.setData(null);
         responseServiceMessage.setTimestamp(new Date());
         responseServiceMessage.setCode("409 ");
         responseServiceMessage.setType(ResponseServiceMessageType.ERROR);
         responseServiceMessage.setMensaje("El correo ya registrado");
-
       }
 
       responseServiceObject.setMensaje(responseServiceMessage);
@@ -169,4 +216,53 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
   }
 
+  private boolean isValid(UsuarioRequest usuarioRequest) {
+
+    if (usuarioRequest.getName() == null || usuarioRequest.getName().trim().isEmpty()) {
+      return false;
+    }
+
+    if (usuarioRequest.getEmail() == null || usuarioRequest.getEmail().trim().isEmpty()) {
+      return false;
+    }
+
+    if (usuarioRequest.getPassword() == null || usuarioRequest.getPassword().trim().isEmpty()) {
+      return false;
+    }
+
+    if (usuarioRequest.getPassword() == null || usuarioRequest.getPassword().isEmpty()) {
+      return false;
+    }
+
+    for (TelefonoVO phone : usuarioRequest.getPhones()) {
+      if (phone == null) {
+        return false;
+      }
+      if (phone.getNumber() == null || phone.getNumber().trim().isEmpty()) {
+        return false;
+      }
+
+      if (phone.getCitycode() == null || phone.getCitycode().trim().isEmpty()) {
+        return false;
+      }
+
+      if (phone.getContrycode() == null || phone.getContrycode().trim().isEmpty()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean isValid(CredencialesRequest credencialesRequest) {
+
+    if (credencialesRequest.getEmail() == null || credencialesRequest.getEmail().trim().isEmpty()) {
+      return false;
+    }
+
+    if (credencialesRequest.getPassword() == null || credencialesRequest.getPassword().trim().isEmpty()) {
+      return false;
+    }
+
+    return true;
+  }
 }
