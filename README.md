@@ -34,8 +34,9 @@ API RESTful para creacion de usuario y autenticación de estos.
 
 1. Clonar repositorio en local
 2. Abrir proyecto con IDE a gusto.
-3. Para acceder a api ingfesar a : http://localhost:8084/swagger-ui/index.html
-4. Para acceder a H2: http://localhost:8084/h2-console
-   user:sa
-   password:
-5.- el token que se entrega al crear el usuario ese debe ponerse en authrization porque los otros endpoint estan controlador por token 
+4. Para acceder a api ingfesar a : http://localhost:8084/swagger-ui/index.html
+5. El token que se entrega al crear el usuario ese debe ponerse en authrization porque los otros endpoint estan controlador por token 
+6. Para acceder a H2: http://localhost:8084/h2-console
+   - user: sa
+   - password: libre
+
