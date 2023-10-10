@@ -13,4 +13,6 @@ public interface UsuarioService {
   ResponseServiceObject eliminarUsuario(String userUUID);
 
   ResponseServiceObject actualizarUsuario(UsuarioActualizarRequest usuarioActualizarRequest);
+
+  ResponseServiceObject obtenerUsuarios();
 }

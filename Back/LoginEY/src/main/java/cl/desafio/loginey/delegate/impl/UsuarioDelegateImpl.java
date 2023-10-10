@@ -34,4 +34,9 @@ public class UsuarioDelegateImpl implements UsuarioDelegate {
   public ResponseServiceObject actualizarUsuario(UsuarioActualizarRequest usuarioActualizarRequest) {
     return usuarioService.actualizarUsuario(usuarioActualizarRequest);
   }
+
+  @Override
+  public ResponseServiceObject obtener() {
+    return usuarioService.obtenerUsuarios();
+  }
 }

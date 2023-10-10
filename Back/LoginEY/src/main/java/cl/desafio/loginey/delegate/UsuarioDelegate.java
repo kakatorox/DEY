@@ -14,4 +14,6 @@ public interface UsuarioDelegate {
   ResponseServiceObject eliminarUsuario(String userUUID);
 
   ResponseServiceObject actualizarUsuario(UsuarioActualizarRequest usuarioActualizarRequest);
+
+  ResponseServiceObject obtener();
 }

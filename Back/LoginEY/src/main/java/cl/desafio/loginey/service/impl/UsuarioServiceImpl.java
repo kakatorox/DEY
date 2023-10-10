@@ -330,6 +330,41 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
   }
 
+  @Override
+  public ResponseServiceObject obtenerUsuarios() {
+    try {
+
+      List<Usuario> usuarios = usuarioRepository.findAll();
+      if(!usuarios.isEmpty()){
+
+        responseServiceObject.setData(usuarioRepository.findAll());
+        responseServiceMessage.setTimestamp(new Date());
+        responseServiceMessage.setCode("200");
+        responseServiceMessage.setType(ResponseServiceMessageType.OK);
+        responseServiceMessage.setMensaje("Servicio Finalizado Correctamente");
+
+      }else{
+
+        responseServiceObject.setData(null);
+        responseServiceMessage.setTimestamp(new Date());
+        responseServiceMessage.setCode("409 ");
+        responseServiceMessage.setType(ResponseServiceMessageType.ERROR);
+        responseServiceMessage.setMensaje("No hay usuarios");
+      }
+
+      responseServiceObject.setMensaje(responseServiceMessage);
+      return responseServiceObject;
+    } catch (Exception e) {
+
+      responseServiceMessage.setTimestamp(new Date());
+      responseServiceMessage.setCode("500");
+      responseServiceMessage.setType(ResponseServiceMessageType.ERROR);
+      responseServiceMessage.setMensaje("Fallo El Servicio de obtencion: " + e.getMessage());
+      responseServiceObject.setMensaje(responseServiceMessage);
+      return responseServiceObject;
+    }
+  }
+
   private boolean isValid(UsuarioRequest usuarioRequest) {
 
     if (usuarioRequest.getName() == null || usuarioRequest.getName().trim().isEmpty()) {

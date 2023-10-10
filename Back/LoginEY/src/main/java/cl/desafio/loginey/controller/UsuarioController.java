@@ -19,8 +19,8 @@ public class UsuarioController {
   private UsuarioDelegate usuarioDelegate;
 
   @GetMapping("/obtener")
-  public ResponseEntity<String> obtener(){
-    return ResponseEntity.ok("entre contoqken");
+  public ResponseEntity<ResponseServiceObject> obtener(){
+    return new ResponseEntity<>(usuarioDelegate.obtener(), HttpStatus.OK);
   }
   @DeleteMapping("/eliminar/{userUUID}")
   public ResponseEntity<ResponseServiceObject> eliminar(@PathVariable String userUUID){
