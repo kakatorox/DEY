@@ -2,6 +2,7 @@ package cl.desafio.loginey.delegate.impl;
 
 import cl.desafio.loginey.delegate.UsuarioDelegate;
 import cl.desafio.loginey.request.CredencialesRequest;
+import cl.desafio.loginey.request.UsuarioActualizarRequest;
 import cl.desafio.loginey.request.UsuarioRequest;
 import cl.desafio.loginey.response.ResponseServiceObject;
 import cl.desafio.loginey.service.UsuarioService;
@@ -22,5 +23,15 @@ public class UsuarioDelegateImpl implements UsuarioDelegate {
   @Override
   public ResponseServiceObject registrarUsuario(UsuarioRequest usuarioRequest) {
     return usuarioService.registrarUsuario(usuarioRequest);
+  }
+
+  @Override
+  public ResponseServiceObject eliminarUsuario(String userUUID) {
+    return usuarioService.eliminarUsuario(userUUID);
+  }
+
+  @Override
+  public ResponseServiceObject actualizarUsuario(UsuarioActualizarRequest usuarioActualizarRequest) {
+    return usuarioService.actualizarUsuario(usuarioActualizarRequest);
   }
 }

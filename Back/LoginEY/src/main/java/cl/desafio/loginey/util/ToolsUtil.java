@@ -1,10 +1,10 @@
 package cl.desafio.loginey.util;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import cl.desafio.loginey.entity.Telefono;
+import cl.desafio.loginey.entity.Usuario;
+import cl.desafio.loginey.vo.TelefonoVO;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,5 +33,13 @@ public class ToolsUtil {
     return UUID.randomUUID().toString();
   }
 
+  public static Telefono convertirATelefono(TelefonoVO telVO, Usuario usuario) {
+    Telefono telefono = new Telefono();
+    telefono.setNumber(telVO.getNumber());
+    telefono.setCitycode(telVO.getCitycode());
+    telefono.setContrycode(telVO.getContrycode());
+    telefono.setUsuario(usuario);
+    return telefono;
+  }
 
 }

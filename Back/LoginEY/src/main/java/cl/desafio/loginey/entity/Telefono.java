@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -23,5 +24,6 @@ public class Telefono {
   @ManyToOne
   @JoinColumn(name = "usuario_uuid")
   @JsonIgnore
+  @ToString.Exclude
   private Usuario usuario;
 }
