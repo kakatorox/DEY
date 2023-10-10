@@ -3,7 +3,6 @@ package cl.desafio.loginey.service.impl;
 import cl.desafio.loginey.entity.Role;
 import cl.desafio.loginey.entity.Telefono;
 import cl.desafio.loginey.entity.Usuario;
-import cl.desafio.loginey.repository.TelefonoRepository;
 import cl.desafio.loginey.repository.UsuarioRepository;
 import cl.desafio.loginey.request.CredencialesRequest;
 import cl.desafio.loginey.request.UsuarioActualizarRequest;
@@ -14,24 +13,19 @@ import cl.desafio.loginey.response.ResponseServiceObject;
 import cl.desafio.loginey.jwt.JwtService;
 import cl.desafio.loginey.service.UsuarioService;
 import cl.desafio.loginey.util.ToolsUtil;
-import cl.desafio.loginey.vo.CredencialVO;
 import cl.desafio.loginey.vo.TelefonoVO;
 import cl.desafio.loginey.vo.TokenVO;
 import cl.desafio.loginey.vo.UsuarioVO;
-import jdk.nashorn.internal.parser.Token;
-import lombok.RequiredArgsConstructor;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service("usuarioService")
-@RequiredArgsConstructor
+
 public class UsuarioServiceImpl implements UsuarioService{
 
   private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
@@ -53,12 +47,9 @@ public class UsuarioServiceImpl implements UsuarioService{
   @Autowired
   private UsuarioRepository usuarioRepository;
 
-  @Autowired
-  private TelefonoRepository telefonoRepository;
+  private PasswordEncoder passwordEncoder;
 
-  private final PasswordEncoder passwordEncoder;
-
-  private final AuthenticationManager authenticationManager;
+  private AuthenticationManager authenticationManager;
 
   @Autowired
   JwtService jwtService;
@@ -116,7 +107,7 @@ public class UsuarioServiceImpl implements UsuarioService{
     String uuid = ToolsUtil.getUUID();
 
     Usuario usuario = new Usuario();
-    List<Telefono> telefonos = new ArrayList<Telefono>();
+    List<Telefono> telefonos = new ArrayList<>();
     List<TelefonoVO> telefonosVO = usuarioRequest.getPhones();
     logger.info("telefonosVO"+telefonosVO);
     usuario.setUuid(uuid);
@@ -178,8 +169,6 @@ public class UsuarioServiceImpl implements UsuarioService{
           usuario.setToken(jwtService.getToken(usuario));
 
           usuarioRepository.save(usuario);
-
-          usuarioRequest.getName();
 
           UsuarioVO usuarioVO = new UsuarioVO();
 
@@ -379,10 +368,6 @@ public class UsuarioServiceImpl implements UsuarioService{
       return false;
     }
 
-    if (usuarioRequest.getPassword() == null || usuarioRequest.getPassword().isEmpty()) {
-      return false;
-    }
-
     for (TelefonoVO phone : usuarioRequest.getPhones()) {
       if (phone == null) {
         return false;
@@ -429,10 +414,6 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     if (usuarioActualizarRequest.getPassword() == null || usuarioActualizarRequest.getPassword().trim().isEmpty()) {
-      return false;
-    }
-
-    if (usuarioActualizarRequest.getPassword() == null || usuarioActualizarRequest.getPassword().isEmpty()) {
       return false;
     }
 
