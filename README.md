@@ -33,7 +33,8 @@ API RESTful para creacion de usuario y autenticación de estos.
 ## Instrucciones de Uso
 
 1. Clonar repositorio en local
-2. Abrir proyecto con IDE a gusto.
+2. Se uso OpenJDK 8u332-b09 tantp en macos como en windows la url de descarga esta aca
+3. Abrir proyecto con IDE a gusto.
 4. Para acceder a api ingfesar a : http://localhost:8084/swagger-ui/index.html
 5. El token que se entrega al crear el usuario ese debe ponerse en authrization porque los otros endpoint estan controlador por token 
 6. Para acceder a H2: http://localhost:8084/h2-console
