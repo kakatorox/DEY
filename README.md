@@ -43,3 +43,24 @@ API RESTful para creacion de usuario y autenticación de estos.
    - user: sa
    - password: libre
 
+## Post Crear usuario
+
+{
+    "name": "Juan Rodriguez",
+    "email": "juannnn@rodriguez.org",
+    "password": "Hunter22",
+    "phones": [
+        {
+            "number": "1234567",
+            "citycode": "1", 
+            "contrycode": "57"
+        }
+    ]
+} 
+
+
+## Post Login
+{
+  "email": "juannnn@rodriguez.org",
+  "password": "Hunter22"
+}
