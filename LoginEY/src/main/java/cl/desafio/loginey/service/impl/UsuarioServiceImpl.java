@@ -47,8 +47,10 @@ public class UsuarioServiceImpl implements UsuarioService{
   @Autowired
   private UsuarioRepository usuarioRepository;
 
+  @Autowired
   private PasswordEncoder passwordEncoder;
 
+  @Autowired
   private AuthenticationManager authenticationManager;
 
   @Autowired
